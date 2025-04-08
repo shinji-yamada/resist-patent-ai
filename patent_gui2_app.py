@@ -1,8 +1,8 @@
 import streamlit as st
 from duckduckgo_search import DDGS
 
-st.set_page_config(page_title="量子特許AI", layout="wide")
-st.title("🔍 半導体フォトジレスト特化型・先行特許調査AI")
+st.set_page_config(page_title="先行特許調査AI", layout="wide")
+st.title("🔍 半導体フォトジレスト特化型・レジスト特許調査AI")
 
 st.markdown("発明の概要を入力してください。Google Patents から類似特許を探します。")
 
