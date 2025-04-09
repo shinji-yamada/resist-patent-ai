@@ -1,51 +1,34 @@
 import streamlit as st
-from duckduckgo_search import DDGS
+import urllib.parse
 
-# Streamlitページ設定
-st.set_page_config(page_title="半導体リソグラフィーレジスト特化型先行特許調査AI", layout="wide")
+st.set_page_config(page_title="先行特許調査AI", layout="wide")
 
-st.title("🔍 半導体リソグラフィーレジスト特化型先行特許調査AI")
-st.markdown("発明の概要を入力し、調査したい技術分野（IPC分類）を選んでください。")
+st.title("🔍 先行特許調査AI（Google Patents連携）")
 
-# 発明概要入力欄
-query = st.text_area("📘 発明の概要を入力", height=200, placeholder="例：EUVリソグラフィー向けの高解像度ネガ型レジスト...")
+st.markdown("発明の概要を入力してください。Google Patents上で直接検索します。")
 
-# IPC選択肢（必要に応じて追加可）
-ipc_options = {
-    "G03F 7/00": "感光性材料全般",
-    "G03F 7/027": "ポジ型・ネガ型の感光性レジスト組成物",
-    "G03F 7/20": "リソグラフィー用感光性材料とその応用",
-    "C08F 2/00": "重合による高分子化（レジスト材料の基盤）",
-    "C08L 33/00": "感光性樹脂組成物",
-}
+# 入力欄
+query = st.text_area("📘 発明の概要", height=200, placeholder="例：フォトリソグラフィ用の新しいレジスト材料...")
 
-st.markdown("🎯 **関連するIPC分類を選択してください（複数選択可）**")
-
-# 複数選択チェックボックス
-selected_ipcs = []
-for code, desc in ipc_options.items():
-    if st.checkbox(f"{code} - {desc}", value=True):
-        selected_ipcs.append(code)
+# IPC分類指定
+ipc_options = ["G03F7/027", "G03F7/30", "C08F2/00", "全部"]
+ipc_selection = st.multiselect("📁 関連するIPC分類を選択", ipc_options, default=["全部"])
 
 # 検索ボタン
-if st.button("🔍 調査開始"):
-    if not query:
+if st.button("🔍 Google Patentsで検索"):
+    if not query.strip():
         st.warning("発明の概要を入力してください。")
-    elif not selected_ipcs:
-        st.warning("最低1つのIPC分類を選んでください。")
     else:
-        # IPCコードを検索文に組み込む
-        ipc_filter = " ".join([f'"{ipc}"' for ipc in selected_ipcs])
-        full_query = f"{query} {ipc_filter} site:patents.google.com"
+        # IPC絞り込みの追加
+        ipc_query = ""
+        if "全部" not in ipc_selection:
+            ipc_query = " ".join([f'"{ipc}"' for ipc in ipc_selection])
+        
+        full_query = f"{query} {ipc_query} site:patents.google.com"
+        encoded_query = urllib.parse.quote_plus(full_query)
 
-        with st.spinner("Google Patentsから類似特許を検索中..."):
-            with DDGS() as ddgs:
-                results = list(ddgs.text(full_query, max_results=5))
+        search_url = f"https://www.google.com/search?q={encoded_query}"
 
-        if results:
-            for idx, r in enumerate(results):
-                st.subheader(f"🧾 類似特許 {idx+1}")
-                st.markdown(f"🔗 [タイトル]({r['href']}): {r['title']}")
-                st.markdown(f"📌 概要: {r['body']}")
-        else:
-            st.info("類似特許が見つかりませんでした。検索語を変更してみてください。")
+        st.markdown(f"🔗 [Google Patentsで検索を実行する]({search_url})")
+        st.success("🔍 検索リンクが生成されました。クリックしてGoogle Patentsを開いてください。")
+
