@@ -2,9 +2,9 @@ import streamlit as st
 from duckduckgo_search import DDGS
 
 # Streamlitページ設定
-st.set_page_config(page_title="先行特許調査AI", layout="wide")
+st.set_page_config(page_title="半導体リソグラフィーレジスト特化型先行特許調査AI", layout="wide")
 
-st.title("🔍 先行特許調査AI")
+st.title("🔍 半導体リソグラフィーレジスト特化型先行特許調査AI")
 st.markdown("発明の概要を入力し、調査したい技術分野（IPC分類）を選んでください。")
 
 # 発明概要入力欄
