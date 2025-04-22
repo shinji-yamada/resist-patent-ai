@@ -1,3 +1,4 @@
 streamlit
 openai
 duckduckgo-search
+python-pptx
