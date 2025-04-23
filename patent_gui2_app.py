@@ -30,26 +30,32 @@ uploaded_file = st.file_uploader("📎 発明内容を説明するPowerPointフ�
 
 ppt_text = ""
 if uploaded_file:
-    try:
-        prs = Presentation(uploaded_file)
-        for slide in prs.slides:
-            for shape in slide.shapes:
-                if hasattr(shape, "text"):
-                    ppt_text += shape.text + "\n"
-        st.success("✅ PowerPointファイルからテキストを抽出しました。")
+    # セッション状態に保存
+    if "ppt_text" not in st.session_state:
+        try:
+            ppt_binary = uploaded_file.read()
+            prs = Presentation(io.BytesIO(ppt_binary))
+            ppt_text = ""
+            for slide in prs.slides:
+                for shape in slide.shapes:
+                    if hasattr(shape, "text"):
+                        ppt_text += shape.text + "\n"
+            st.session_state["ppt_text"] = ppt_text  # 保存
+            st.success("✅ PowerPointファイルからテキストを抽出しました。")
+        except Exception as e:
+            st.error(f"❌ PowerPointの読み込み中にエラーが発生しました: {e}")
+    else:
+        ppt_text = st.session_state["ppt_text"]
         st.text_area("📘 抽出されたテキスト", ppt_text, height=200)
-    except Exception as e:
-        st.error(f"❌ PowerPointの読み込み中にエラーが発生しました: {e}")
+
 
 # --- ③ 実行ボタンと後続処理（仮） ---
-st.header("③ 類似特許の取得")
-
 if st.button("🔍 類似特許を探す（※現在はダミー動作）"):
-    if not uploaded_file:
-        st.warning("⚠️ まずPowerPointファイルをアップロードしてください。")
+    if "ppt_text" not in st.session_state or not st.session_state["ppt_text"]:
+        st.warning("⚠️ PowerPointファイルから抽出したテキストが見つかりません。")
     elif not selected_ipcs:
         st.warning("⚠️ IPC分類コードを1つ以上選択してください。")
     else:
         st.info("🔧 概念検索機能とGoogle Patents検索は現在開発中です。")
         st.write("✅ 選択されたIPCコード:", ", ".join(selected_ipcs))
-        st.write("📝 抽出されたテキストの一部:", ppt_text[:300] + "..." if len(ppt_text) > 300 else ppt_text)
+        st.write("📝 抽出されたテキストの一部:", st.session_state["ppt_text"][:300] + "...")
