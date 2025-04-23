@@ -1,6 +1,7 @@
 import streamlit as st
 from pptx import Presentation
 import os
+import io 
 
 # ページ設定
 st.set_page_config(page_title="特許調査ツール", layout="wide")
