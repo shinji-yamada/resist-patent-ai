@@ -60,3 +60,7 @@ if st.button("🔍 類似特許を探す（※現在はダミー動作）"):
         st.info("🔧 概念検索機能とGoogle Patents検索は現在開発中です。")
         st.write("✅ 選択されたIPCコード:", ", ".join(selected_ipcs))
         st.write("📝 抽出されたテキストの一部:", st.session_state["ppt_text"][:300] + "...")
+query = "+".join(st.session_state["ppt_text"].split()[:10])  # 最初の10単語だけ
+google_patents_url = f"https://patents.google.com/?q={query}"
+
+st.markdown(f"[🔗 Google Patentsで検索する]({google_patents_url})", unsafe_allow_html=True)
