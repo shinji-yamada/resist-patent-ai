@@ -2,9 +2,9 @@ import streamlit as st
 from duckduckgo_search import DDGS
 import re
 
-st.set_page_config(page_title="量子特許AI（API不要版）", layout="wide")
+st.set_page_config(page_title="半導体フォトレジスト特化型特許調査ツール", layout="wide")
 
-st.title("🔍 半導体フォトレジスト特化型・先行特許調査AI（API不使用）")
+st.title("🔍 半導体フォトレジスト特化型特許調査ツール")
 st.markdown("発明の概要を入力してください。Google Patentsから類似特許を検索し、簡易要約を表示します。")
 
 query = st.text_area("📘 発明の概要を入力", height=200, placeholder="例：量子演算結果に対して、AIでデコヒーレンス補正を行い、冷却不要の量子コンピューターを構成...")
