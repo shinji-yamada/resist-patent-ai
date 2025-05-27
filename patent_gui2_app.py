@@ -14,20 +14,19 @@ applicant_list = [
     "FFEM", "Dongjin", "SKMP", "Kempur", "Red Avenue", "NATA", "富士フィルム"
 ]
 
-# チェックボックス（デフォルトで全てTrue＝レ点あり）
+# レ点チェック（初期状態で全選択）
 st.markdown("### ✅ 出願人を選択してください（すべて選択済）")
 selected_applicants = []
-cols = st.columns(3)  # 3列に分けて見やすくする
-
+cols = st.columns(3)
 for i, applicant in enumerate(applicant_list):
     col = cols[i % 3]
-    if col.checkbox(applicant, value=True):  # ← ここがデフォルトON
+    if col.checkbox(applicant, value=True):
         selected_applicants.append(applicant)
 
 # 発明概要
-query = st.text_area("📘 発明の概要を入力", height=200, placeholder="例：新規感光性樹脂を含むフォトレジストにより、分解能と感度を両立...")
+query = st.text_area("📘 発明の概要を入力", height=200, placeholder="例：新規感光性樹脂を含むフォトレジスト...")
 
-# 要約関数（簡易）
+# 要約関数
 def simple_summary(text):
     lines = text.split('。')
     for line in lines:
@@ -35,25 +34,31 @@ def simple_summary(text):
             return line.strip() + "。"
     return lines[0].strip() + "。" if lines else ""
 
-# 実行ボタン
+# 調査実行
 if st.button("🔍 調査開始"):
     if not selected_applicants:
-        st.warning("出願人を1件以上チェックしてください。")
+        st.warning("出願人を1件以上選択してください。")
     elif not query.strip():
         st.warning("発明の概要を入力してください。")
     else:
         st.info(f"{len(selected_applicants)}件の出願人に対して検索を行います。")
+
         for applicant in selected_applicants:
             search_query = f"{query} {applicant} site:patents.google.com"
             st.subheader(f"🧾 出願人: {applicant}")
 
-            with st.spinner(f"{applicant} の特許を検索中..."):
-                with DDGS() as ddgs:
-                    results = list(ddgs.text(search_query, max_results=2))
+            results = []
 
-            if not results:
-                st.markdown("⚠️ 類似特許が見つかりませんでした。")
-            else:
+            try:
+                with st.spinner(f"{applicant} の特許をDuckDuckGoで検索中..."):
+                    with DDGS() as ddgs:
+                        results = list(ddgs.text(search_query, max_results=2))
+            except Exception as e:
+                st.error(f"❌ DuckDuckGo 検索に失敗しました（{applicant}）: {str(e)}")
+                google_link = f"https://www.google.com/search?q={search_query.replace(' ', '+')}"
+                st.markdown(f"🔗 代替: [Googleで検索]({google_link})")
+
+            if results:
                 for idx, r in enumerate(results):
                     st.markdown(f"**{idx+1}. [{r['title']}]({r['href']})**")
                     st.markdown(f"📌 概要: {r['body']}")
