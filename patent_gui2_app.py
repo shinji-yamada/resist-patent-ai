@@ -7,7 +7,7 @@ st.set_page_config(page_title="半導体フォトレジスト特化型特許調�
 st.title("🔍 半導体フォトレジスト特化型特許調査ツール")
 st.markdown("発明の概要を入力してください。Google Patentsから類似特許を検索し、簡易要約を表示します。")
 
-query = st.text_area("📘 発明の概要を入力", height=200, placeholder="例：量子演算結果に対して、AIでデコヒーレンス補正を行い、冷却不要の量子コンピューターを構成...")
+query = st.text_area("📘 発明の概要を入力", height=200, placeholder="例：エキシマレーザー用半導体リソグラフィーレジストの製造方法であって、重合前に添加する貧溶媒に特徴があるもの...")
 
 def simple_summary(text):
     lines = text.split('。')
